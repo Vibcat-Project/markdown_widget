@@ -107,13 +107,14 @@ abstract class HeadingConfig implements LeafConfig {
 class H1Config extends HeadingConfig {
   @override
   final TextStyle style;
+  final HeadingDivider? headingDivider;
 
   const H1Config(
       {this.style = const TextStyle(
         fontSize: 32,
         height: 40 / 32,
         fontWeight: FontWeight.bold,
-      )});
+      ), this.headingDivider});
 
   @nonVirtual
   @override
@@ -128,20 +129,21 @@ class H1Config extends HeadingConfig {
       ));
 
   @override
-  HeadingDivider? get divider => HeadingDivider.h1;
+  HeadingDivider? get divider => headingDivider;
 }
 
 ///config class for h2
 class H2Config extends HeadingConfig {
   @override
   final TextStyle style;
+  final HeadingDivider? headingDivider;
 
   const H2Config(
       {this.style = const TextStyle(
         fontSize: 24,
         height: 30 / 24,
         fontWeight: FontWeight.bold,
-      )});
+      ), this.headingDivider});
 
   @nonVirtual
   @override
@@ -156,20 +158,21 @@ class H2Config extends HeadingConfig {
       ));
 
   @override
-  HeadingDivider? get divider => HeadingDivider.h2;
+  HeadingDivider? get divider => headingDivider;
 }
 
 ///config class for h3
 class H3Config extends HeadingConfig {
   @override
   final TextStyle style;
+  final HeadingDivider? headingDivider;
 
   const H3Config(
       {this.style = const TextStyle(
         fontSize: 20,
         height: 25 / 20,
         fontWeight: FontWeight.bold,
-      )});
+      ), this.headingDivider});
 
   @nonVirtual
   @override
@@ -184,7 +187,7 @@ class H3Config extends HeadingConfig {
       ));
 
   @override
-  HeadingDivider? get divider => HeadingDivider.h3;
+  HeadingDivider? get divider => headingDivider;
 }
 
 ///config class for h4
