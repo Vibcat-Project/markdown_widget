@@ -6,3 +6,4 @@ export 'leaf/heading.dart';
 export 'leaf/horizontal_rules.dart';
 export 'leaf/link.dart';
 export 'leaf/paragraph.dart';
+export 'leaf/latex.dart';

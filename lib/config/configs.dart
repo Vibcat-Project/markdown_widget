@@ -138,8 +138,7 @@ class MarkdownConfig {
   TableConfig get table =>
       _getConfig<TableConfig>(MarkdownTag.table, const TableConfig());
 
-  CodeConfig get code =>
-      _getConfig<CodeConfig>(MarkdownTag.code, const CodeConfig());
+  CodeConfig get code => _getConfig<CodeConfig>(MarkdownTag.code, CodeConfig());
 
   ImgConfig get img =>
       _getConfig<ImgConfig>(MarkdownTag.img, const ImgConfig());

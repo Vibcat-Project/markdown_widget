@@ -40,28 +40,69 @@ class CodeBlockNode extends ElementNode {
     final widget = Container(
       decoration: preConfig.decoration,
       margin: preConfig.margin,
-      padding: preConfig.padding,
       width: double.infinity,
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: List.generate(splitContents.length, (index) {
-            final currentContent = splitContents[index];
-            return ProxyRichText(
-              TextSpan(
-                children: highLightSpans(
-                  currentContent,
-                  language: language ?? preConfig.language,
-                  theme: preConfig.theme,
-                  textStyle: style,
-                  styleNotMatched: preConfig.styleNotMatched,
-                ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            decoration: preConfig.codeBlockTitleDecoration,
+            margin: preConfig.codeBlockTitleMargin,
+            padding: preConfig.codeBlockTitlePadding,
+            child: Row(
+              children: [
+                Expanded(
+                    child: Text(
+                  language ?? preConfig.language,
+                  style: preConfig.codeBlockTitleTextStyle,
+                )),
+                Container(
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        preConfig.codeBlockTitleCopyIcon,
+                        size: preConfig.codeBlockTitleTextStyle.fontSize,
+                        color: preConfig.codeBlockTitleTextStyle.color,
+                      ),
+                      SizedBox(
+                        width: 4,
+                      ),
+                      Text(
+                        preConfig.codeBlockTitleCopyText,
+                        style: preConfig.codeBlockTitleTextStyle,
+                      )
+                    ],
+                  ),
+                )
+              ],
+            ),
+          ),
+          Container(
+            padding: preConfig.codeBlockBodyPadding,
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: List.generate(splitContents.length, (index) {
+                  final currentContent = splitContents[index];
+                  return ProxyRichText(
+                    TextSpan(
+                      children: highLightSpans(
+                        currentContent,
+                        language: language ?? preConfig.language,
+                        theme: preConfig.theme,
+                        textStyle: style,
+                        styleNotMatched: preConfig.styleNotMatched,
+                      ),
+                    ),
+                    richTextBuilder: visitor.richTextBuilder,
+                  );
+                }),
               ),
-              richTextBuilder: visitor.richTextBuilder,
-            );
-          }),
-        ),
+            ),
+          ),
+        ],
       ),
     );
     return WidgetSpan(
@@ -70,7 +111,7 @@ class CodeBlockNode extends ElementNode {
   }
 
   @override
-  TextStyle get style => preConfig.textStyle.merge(parentStyle);
+  TextStyle get style => preConfig.codeBlockBodyTextStyle.merge(parentStyle);
 }
 
 ///transform code to highlight code
@@ -134,10 +175,19 @@ List<TextSpan> convertHiNodes(
 
 ///config class for pre
 class PreConfig implements LeafConfig {
-  final EdgeInsetsGeometry padding;
   final Decoration decoration;
   final EdgeInsetsGeometry margin;
-  final TextStyle textStyle;
+
+  final EdgeInsetsGeometry codeBlockBodyPadding;
+  final TextStyle codeBlockBodyTextStyle;
+
+  /// CodeBlock container title
+  final EdgeInsetsGeometry codeBlockTitlePadding;
+  final Decoration? codeBlockTitleDecoration;
+  final EdgeInsetsGeometry codeBlockTitleMargin;
+  final TextStyle codeBlockTitleTextStyle;
+  final IconData codeBlockTitleCopyIcon;
+  final String codeBlockTitleCopyText;
 
   /// the [styleNotMatched] is used to set a default TextStyle for code that does not match any theme.
   final TextStyle? styleNotMatched;
@@ -149,13 +199,20 @@ class PreConfig implements LeafConfig {
   final String language;
 
   const PreConfig({
-    this.padding = const EdgeInsets.all(16.0),
     this.decoration = const BoxDecoration(
       color: Color(0xffeff1f3),
       borderRadius: BorderRadius.all(Radius.circular(8.0)),
     ),
     this.margin = const EdgeInsets.symmetric(vertical: 8.0),
-    this.textStyle = const TextStyle(fontSize: 16),
+    this.codeBlockTitlePadding =
+        const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+    this.codeBlockTitleDecoration,
+    this.codeBlockTitleMargin = const EdgeInsets.all(0),
+    this.codeBlockTitleTextStyle = const TextStyle(fontSize: 12),
+    this.codeBlockTitleCopyIcon = Icons.copy,
+    this.codeBlockTitleCopyText = 'Copy',
+    this.codeBlockBodyPadding = const EdgeInsets.fromLTRB(16, 8, 16, 12),
+    this.codeBlockBodyTextStyle = const TextStyle(fontSize: 14),
     this.styleNotMatched,
     this.theme = a11yLightTheme,
     this.language = 'dart',
@@ -173,22 +230,41 @@ class PreConfig implements LeafConfig {
 
   ///copy by other params
   PreConfig copy({
-    EdgeInsetsGeometry? padding,
     Decoration? decoration,
     EdgeInsetsGeometry? margin,
-    TextStyle? textStyle,
+    EdgeInsetsGeometry? codeBlockBodyPadding,
+    TextStyle? codeBlockBodyTextStyle,
+    EdgeInsetsGeometry? codeBlockTitlePadding,
+    Decoration? codeBlockTitleDecoration,
+    EdgeInsetsGeometry? codeBlockTitleMargin,
+    TextStyle? codeBlockTitleTextStyle,
+    IconData? codeBlockTitleCopyIcon,
+    String? codeBlockTitleCopyText,
     TextStyle? styleNotMatched,
     CodeWrapper? wrapper,
+    CodeBuilder? builder,
     Map<String, TextStyle>? theme,
     String? language,
   }) {
     return PreConfig(
-      padding: padding ?? this.padding,
       decoration: decoration ?? this.decoration,
       margin: margin ?? this.margin,
-      textStyle: textStyle ?? this.textStyle,
+      codeBlockBodyPadding: codeBlockBodyPadding ?? this.codeBlockBodyPadding,
+      codeBlockBodyTextStyle:
+          codeBlockBodyTextStyle ?? this.codeBlockBodyTextStyle,
+      codeBlockTitlePadding:
+          codeBlockTitlePadding ?? this.codeBlockTitlePadding,
+      codeBlockTitleDecoration: codeBlockTitleDecoration,
+      codeBlockTitleMargin: codeBlockTitleMargin ?? this.codeBlockTitleMargin,
+      codeBlockTitleTextStyle:
+          codeBlockTitleTextStyle ?? this.codeBlockTitleTextStyle,
+      codeBlockTitleCopyIcon:
+          codeBlockTitleCopyIcon ?? this.codeBlockTitleCopyIcon,
+      codeBlockTitleCopyText:
+          codeBlockTitleCopyText ?? this.codeBlockTitleCopyText,
       styleNotMatched: styleNotMatched ?? this.styleNotMatched,
       wrapper: wrapper ?? this.wrapper,
+      builder: builder ?? this.builder,
       theme: theme ?? this.theme,
       language: language ?? this.language,
     );
